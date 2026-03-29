@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinSense AI Mentor Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW Registered!', reg.scope))
+                    .catch(err => console.log('SW Failed!', err));
+            });
+        }
+    </script>
+</head>
+<body>
+    <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+
+    <div class="header-controls">
+        <button id="themeToggle" class="theme-toggle" title="Toggle Light/Dark Mode">☀️</button>
+        <div class="lang-container">
+        <select id="lang_select" class="lang-selector">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+        </select>
+        </div>
+    </div>
+
+    <div class="bg-glow blob-1"></div>
+    <div class="bg-glow blob-2"></div>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="logo-area">
+                <h2><span class="gradient-text">Fin</span>Sense</h2>
+                <p style="color:var(--text-muted); font-size: 0.85rem; padding-top:4px;">India's API-Powered Advisor</p>
+            </div>
+            <nav class="nav-menu">
+                <button class="tab-btn active" data-tab="tab-health" data-i18n="tab_health">📊 Health Score</button>
+                <button class="tab-btn" data-tab="tab-tax" data-i18n="tab_tax">⚖️ Tax Wizard</button>
+                <button class="tab-btn" data-tab="tab-couple" data-i18n="tab_couple">👩‍❤️‍👨 Couple Planner</button>
+                <button class="tab-btn" data-tab="tab-fire" data-i18n="tab_fire">🔥 FIRE Planner</button>
+                <button class="tab-btn" data-tab="tab-life" data-i18n="tab_life">🎉 Life Events</button>
+                <button class="tab-btn" data-tab="tab-rent" data-i18n="tab_rent">🏠 Rent vs Buy</button>
+                <button class="tab-btn" data-tab="tab-debt" data-i18n="tab_debt">💳 Debt Eraser</button>
+                <button class="tab-btn" data-tab="tab-gold" data-i18n="tab_gold">🥇 Gold Analyzer</button>
+                <button class="tab-btn" data-tab="tab_budget" data-i18n="tab_budget">📊 AI Budgetizer</button>
+                <button class="tab-btn" data-tab="tab_leak" data-i18n="tab_leak">🚰 Wealth Leak Finder</button>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <!-- TAB 1: HEALTH SCORE -->
+            <div id="tab-health" class="tab-pane active">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="app_title"><span class="gradient-text">Money Health</span> Mentor</h1>
+                    <p data-i18n="app_desc">Get your AI-powered financial score and personalized action plan.</p>
+                </header>
+                <section class="glass-card form-section">
+                    <h2 data-i18n="form_title" style="margin-bottom: 30px; font-size:1.8rem; font-weight:600;">📊 Financial Details</h2>
+                    <form id="healthForm">
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="lbl_age">Age</label><input type="number" id="age" required placeholder="28"></div>
+                            <div class="input-field"><label data-i18n="lbl_income">Monthly Income (₹)</label><input type="number" id="income" required placeholder="60000"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="lbl_expenses">Monthly Expenses (₹)</label><input type="number" id="expenses" required placeholder="40000"></div>
+                            <div class="input-field"><label data-i18n="lbl_emergency">Emergency Fund (Months covered)</label><input type="number" id="emergency_months" required placeholder="3"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field boolean-toggle">
+                                <label data-i18n="lbl_health_ins">Health Insurance?</label>
+                                <select id="health_insurance">
+                                    <option value="Yes" data-i18n="opt_yes_personal">Yes (Personal)</option>
+                                    <option value="No" data-i18n="opt_no_corp">No (Or Corporate only)</option>
+                                </select>
+                            </div>
+                            <div class="input-field boolean-toggle">
+                                <label data-i18n="lbl_life_ins">Life Insurance (Term Plan)?</label>
+                                <select id="life_insurance">
+                                    <option value="Yes" data-i18n="opt_yes">Yes</option>
+                                    <option value="No" data-i18n="opt_no">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field">
+                                <label data-i18n="lbl_investments">Investment Diversification</label>
+                                <select id="investments">
+                                    <option value="None" data-i18n="opt_inv_none">None / Savings A/c</option>
+                                    <option value="FD" data-i18n="opt_inv_fd">FDs & PPF</option>
+                                    <option value="Mutual Funds" data-i18n="opt_inv_mf">Mutual Funds & SIPs</option>
+                                    <option value="Stocks" data-i18n="opt_inv_stocks">Direct Equity / Stocks</option>
+                                </select>
+                            </div>
+                            <div class="input-field">
+                                <label data-i18n="lbl_tax">Tax Saving (80C)</label>
+                                <select id="tax_saving">
+                                    <option value="Yes" data-i18n="opt_tax_yes">Yes (Maxed out ₹1.5L)</option>
+                                    <option value="No" data-i18n="opt_tax_no">No / Not Fully utilized</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field">
+                                <label data-i18n="lbl_debt">Do you have Debts/Loans?</label>
+                                <select id="debt"><option value="Yes" data-i18n="opt_yes">Yes</option><option value="No" data-i18n="opt_no">No</option></select>
+                            </div>
+                            <div class="input-field">
+                                <label data-i18n="lbl_emi">EMI % of Income</label>
+                                <input type="number" id="emi_percentage" required placeholder="25" value="0">
+                            </div>
+                        </div>
+                        <button type="submit" class="cta-button" data-i18n="btn_analyze">Analyze My Finances 🚀</button>
+                    </form>
+                </section>
+
+                <section class="glass-card result-section hidden" id="resultCard">
+                    <div class="score-header">
+                        <div class="score-circle">
+                            <svg class="progress-ring" width="120" height="120">
+                                <circle class="progress-ring__circle_bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                                <circle class="progress-ring__circle" stroke="#00f2fe" stroke-width="8" stroke-linecap="round" fill="transparent" r="52" cx="60" cy="60"/>
+                            </svg>
+                            <div class="score-value" id="scoreValue">0</div>
+                        </div>
+                        <div class="score-meta">
+                            <h3>Money Health Score</h3>
+                            <div class="status-badge" id="statusBadge" data-i18n="status_analyzing">Analyzing...</div>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <div class="result-block summary-block"><h4 data-i18n="res_summary">📌 Summary</h4><p id="resSummary"></p></div>
+                        <div class="result-block warning"><h4 data-i18n="res_problems">⚠️ Top Problems</h4><ul id="resProblems"></ul></div>
+                        <div class="result-block success"><h4 data-i18n="res_action">✅ Action Plan</h4><ol id="resAction"></ol></div>
+                        <div class="result-block highlight"><h4 data-i18n="res_invest">📈 Monthly Investment Suggestion</h4><p id="resInvest"></p></div>
+                        <div class="result-block info"><h4 data-i18n="res_emergency">🛡️ Emergency Fund Advice</h4><p id="resEmergency"></p></div>
+                        <div class="smart-tip"><h4 data-i18n="res_tip">💡 Smart Tip</h4><p id="resTip"></p></div>
+                    </div>
+                    <button class="cta-button" id="downloadPdfBtn" style="margin-top: 15px; display:flex; gap:10px; align-items:center; justify-content:center; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.4);">
+                        <span class="icon">📄</span> <span data-i18n="btn_dl_pdf">Download Action Plan (PDF)</span>
+                    </button>
+                    <button class="btn-secondary" id="resetBtn" data-i18n="btn_recalc">Recalculate 🔄</button>
+                </section>
+            </div>
+
+            <!-- TAB 2: TAX WIZARD -->
+            <div id="tab-tax" class="tab-pane">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="tax_title"><span class="gradient-text">Tax</span> Wizard</h1>
+                    <p data-i18n="tax_desc">AI models Old vs New Tax Regime to find your exact missing deductions for FY24-25.</p>
+                </header>
+                <section class="glass-card form-section">
+                    <label class="upload-area" id="form16UploadBtn" for="form16" style="display: block;">
+                        <div id="form16TextWrap" style="pointer-events: none;">
+                            <p style="font-size: 1.3rem;" data-i18n="tax_upload_text">📄 Upload Form 16 / Salary Slip</p>
+                            <span style="color:var(--text-muted); font-size:0.95rem;" data-i18n="tax_upload_sub">(AI Vision Simulate Extraction)</span>
+                        </div>
+                        <input type="file" id="form16" accept=".pdf,.png,.jpg" style="display:none;" />
+                    </label>
+                    
+                    <div class="divider" data-i18n="tax_divider">OR ENTER DATA MANUALLY</div>
+
+                    <form id="taxForm">
+                        <div class="form-group row">
+                            <div class="input-field">
+                                <label data-i18n="tax_lbl_gross">Gross Annual Salary (₹)</label>
+                                <input type="number" id="tax_gross" required placeholder="e.g. 1500000">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="tax_lbl_hra">HRA Exemption Claimed (₹)</label><input type="number" id="tax_hra" placeholder="e.g. 80000" value="0"></div>
+                            <div class="input-field"><label data-i18n="tax_lbl_80c">80C Deductions (ELSS, PF, LIC) (₹)</label><input type="number" id="tax_80c" placeholder="Max 150000" value="0"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="tax_lbl_80d">Health Ins. Premium (80D) (₹)</label><input type="number" id="tax_80d" placeholder="e.g. 25000" value="0"></div>
+                            <div class="input-field"><label data-i18n="tax_lbl_hl">Home Loan Interest (₹)</label><input type="number" id="tax_hl" placeholder="Max 200000" value="0"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="tax_lbl_nps">NPS Additional (80CCD(1B)) (₹)</label><input type="number" id="tax_nps" placeholder="Max 50000" value="0"></div>
+                            <div class="input-field"><label data-i18n="tax_lbl_oth">LTA / Other Exemptions (₹)</label><input type="number" id="tax_oth" placeholder="e.g. 20000" value="0"></div>
+                        </div>
+                        <button type="submit" class="cta-button" style="background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); box-shadow: 0 10px 25px rgba(245, 87, 108, 0.3);" data-i18n="tax_btn_run">Run FinAI Tax Model ⚡</button>
+                    </form>
+                </section>
+                
+                <section class="glass-card result-section hidden" id="taxResultCard" style="margin-top:20px;">
+                    <div class="row" style="margin-bottom: 20px;">
+                        <div class="regime-box" id="newRegBox">
+                            <h4 data-i18n="tax_res_new">New Tax Regime</h4>
+                            <h2 style="margin: 10px 0; color:#fff; font-size:2.2rem;" id="newTaxValue">₹0</h2>
+                            <p style="font-size: 0.95rem; color:var(--text-muted);" data-i18n="tax_res_new_sub">(Flat Standard Deduction)</p>
+                        </div>
+                        <div class="regime-box" id="oldRegBox">
+                            <h4 data-i18n="tax_res_old">Old Tax Regime</h4>
+                            <h2 style="margin: 10px 0; color:#fff; font-size:2.2rem;" id="oldTaxValue">₹0</h2>
+                            <p style="font-size: 0.95rem; color:var(--text-muted);" data-i18n="tax_res_old_sub">(With All Claimed Deductions)</p>
+                        </div>
+                    </div>
+                    <div class="result-block highlight">
+                        <h4 data-i18n="tax_res_verdict">🏆 FinAI Verdict</h4>
+                        <p id="taxVerdict" style="color:#fff; font-size:1.15rem;"></p>
+                    </div>
+                    <div class="result-block warning">
+                        <h4 data-i18n="tax_res_advice">💡 Missing Deductions & AI Optimization Advice</h4>
+                        <ul id="taxAdviceList"></ul>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 3: COUPLE PLANNER -->
+            <div id="tab-couple" class="tab-pane">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="cpl_title"><span class="gradient-text">Unified</span> Planner</h1>
+                    <p data-i18n="cpl_desc">India's first AI-powered joint financial planning to optimize across two incomes seamlessly.</p>
+                </header>
+                <section class="glass-card form-section">
+                    <form id="coupleForm">
+                        <div class="dual-col" style="margin-bottom: 30px;">
+                            <!-- Partner A -->
+                            <div style="background: rgba(255,255,255,0.02); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                                <h3 style="margin-bottom: 20px; color:#4facfe;" data-i18n="cpl_partner_a">👩‍💼 Partner A</h3>
+                                <div class="form-group"><label data-i18n="cpl_lbl_income">Annual In-Hand Income (₹)</label><input type="number" id="p1_income" required placeholder="e.g. 1800000"></div>
+                                <div class="form-group"><label data-i18n="cpl_lbl_80c">80C Maxed Out? (₹1.5L)</label><select id="p1_80c"><option value="Yes" data-i18n="opt_yes">Yes</option><option value="No" data-i18n="opt_no">No</option></select></div>
+                                <div class="form-group"><label data-i18n="cpl_lbl_hl">Home Loan EMI Burden (₹ Yearly)</label><input type="number" id="p1_hl" placeholder="0" value="0"></div>
+                            </div>
+                            
+                            <!-- Partner B -->
+                            <div style="background: rgba(255,255,255,0.02); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                                <h3 style="margin-bottom: 20px; color:#f093fb;" data-i18n="cpl_partner_b">👨‍💼 Partner B</h3>
+                                <div class="form-group"><label data-i18n="cpl_lbl_income">Annual In-Hand Income (₹)</label><input type="number" id="p2_income" required placeholder="e.g. 800000"></div>
+                                <div class="form-group"><label data-i18n="cpl_lbl_80c">80C Maxed Out? (₹1.5L)</label><select id="p2_80c"><option value="Yes" data-i18n="opt_yes">Yes</option><option value="No" data-i18n="opt_no">No</option></select></div>
+                                <div class="form-group"><label data-i18n="cpl_lbl_hl">Home Loan EMI Burden (₹ Yearly)</label><input type="number" id="p2_hl" placeholder="0" value="0"></div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="background: rgba(0,230,118,0.05); padding:20px; border-radius:12px; border: 1px dashed rgba(0,230,118,0.3);">
+                            <label style="color:#00e676;" data-i18n="cpl_lbl_sip">Monthly Joint Target Savings (SIPs, Goals) (₹)</label>
+                            <input type="number" id="joint_sip" required placeholder="e.g. 50000">
+                        </div>
+                        <button type="submit" class="cta-button" style="background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);" data-i18n="cpl_btn_run">Optimize Unified Wealth 💍</button>
+                    </form>
+                </section>
+                
+                <section class="glass-card result-section hidden" id="coupleResultCard" style="margin-top:20px;">
+                    <div class="result-block success">
+                        <h4 data-i18n="cpl_res_title">✅ Unified FinAI Optimization Strategy</h4>
+                        <ol id="coupleAdviceList"></ol>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 4: FIRE PLANNER -->
+            <div id="tab-fire" class="tab-pane">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="fire_title"><span class="gradient-text">FIRE</span> Planner</h1>
+                    <p data-i18n="fire_desc">Financial Independence, Retire Early - Roadmap & Asset Shifts.</p>
+                </header>
+                <section class="glass-card form-section">
+                    <form id="fireForm">
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="fire_lbl_age">Current Age</label><input type="number" id="fire_age" required placeholder="30"></div>
+                            <div class="input-field"><label data-i18n="fire_lbl_retire">Target Retirement Age</label><input type="number" id="fire_retire" required placeholder="45"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="fire_lbl_exp">Monthly Expenses Today (₹)</label><input type="number" id="fire_exp" required placeholder="50000"></div>
+                            <div class="input-field"><label data-i18n="fire_lbl_port">Current Portfolio Total (₹)</label><input type="number" id="fire_port" required placeholder="1500000"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="fire_lbl_inv">Current Monthly SIP / Saving (₹)</label><input type="number" id="fire_inv" required placeholder="30000"></div>
+                        </div>
+                        <button type="submit" class="cta-button" style="background: linear-gradient(135deg, #ff9a44 0%, #fc6076 100%);" data-i18n="fire_btn_run">Calculate FIRE Path 🔥</button>
+                    </form>
+                </section>
+                <section class="glass-card result-section hidden" id="fireResultCard" style="margin-top:20px;">
+                    <div class="result-block highlight">
+                        <h4 data-i18n="fire_res_title">🔥 FIRE Roadmap</h4>
+                        <p id="fireVerdict" style="color:#fff; font-size:1.15rem; margin-bottom: 15px;"></p>
+                    </div>
+                    <div class="result-block info">
+                        <h4 data-i18n="fire_res_plan">🗺️ Month-by-Month Allocation Plan</h4>
+                        <ul id="fireAdviceList"></ul>
+                    </div>
+                    <div class="chart-container" style="margin-top:20px; position: relative; height:300px; width:100%;">
+                        <canvas id="fireChart"></canvas>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 5: LIFE EVENT ADVISOR -->
+            <div id="tab-life" class="tab-pane">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="life_title"><span class="gradient-text">Life</span> Advisor</h1>
+                    <p data-i18n="life_desc">AI strategy for big life events: Bonus, Marriage, Baby, Inheritance.</p>
+                </header>
+                <section class="glass-card form-section">
+                    <form id="lifeForm">
+                        <div class="form-group">
+                            <label data-i18n="life_lbl_event">Select Life Event</label>
+                            <select id="life_event" style="margin-bottom:15px;">
+                                <option value="bonus" data-i18n="life_opt_bonus">Large Cash Bonus / RSU</option>
+                                <option value="inherit" data-i18n="life_opt_inherit">Inheritance / Lump Sum</option>
+                                <option value="marriage" data-i18n="life_opt_marriage">Getting Married</option>
+                                <option value="baby" data-i18n="life_opt_baby">New Baby Arrival</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="life_amt_group">
+                            <label data-i18n="life_lbl_amt">Amount Involved (₹) (If applicable)</label>
+                            <input type="number" id="life_amt" placeholder="e.g. 500000" value="0">
+                        </div>
+                        <button type="submit" class="cta-button" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color:#000;" data-i18n="life_btn_run">Get AI Event Advice 🎉</button>
+                    </form>
+                </section>
+                <section class="glass-card result-section hidden" id="lifeResultCard" style="margin-top:20px;">
+                    <div class="result-block success">
+                        <h4 data-i18n="life_res_title">🧠 Event Financial Strategy</h4>
+                        <ul id="lifeAdviceList"></ul>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 6: RENT VS BUY SIMULATOR -->
+            <div id="tab-rent" class="tab-pane">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="rent_title"><span class="gradient-text">Real</span> Estate Simulator</h1>
+                    <p data-i18n="rent_desc">AI mathematical breakdown: Should you buy a house or rent and invest the difference?</p>
+                </header>
+                <section class="glass-card form-section">
+                    <form id="rentForm">
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="rent_lbl_cost">Property Cost (₹)</label><input type="number" id="rent_cost" required placeholder="10000000"></div>
+                            <div class="input-field"><label data-i18n="rent_lbl_dp">Down Payment (₹)</label><input type="number" id="rent_dp" required placeholder="2000000"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="rent_lbl_roi">Home Loan Interest Rate (%)</label><input type="number" step="0.1" id="rent_roi" required value="8.5"></div>
+                            <div class="input-field"><label data-i18n="rent_lbl_tenure">Loan Tenure (Years)</label><input type="number" id="rent_tenure" required value="20"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="rent_lbl_rent">Current Monthly Rent (₹)</label><input type="number" id="rent_rent" required placeholder="30000"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="rent_lbl_prop_app">Property Appreciation (% p.a.)</label><input type="number" step="0.1" id="rent_prop_app" required value="5"></div>
+                            <div class="input-field"><label data-i18n="rent_lbl_mf_ret">Expected MF Return (% p.a.)</label><input type="number" step="0.1" id="rent_mf_ret" required value="12"></div>
+                        </div>
+                        <button type="submit" class="cta-button" style="background: linear-gradient(135deg, #0ba360 0%, #3cb0fd 100%);" data-i18n="rent_btn_run">Simulate Future Scenarios 🔮</button>
+                    </form>
+                </section>
+                <section class="glass-card result-section hidden" id="rentResultCard" style="margin-top:20px;">
+                    <div class="result-block highlight">
+                        <h4 data-i18n="rent_res_title">🏢 Buy vs Rent Net Worth</h4>
+                        <p id="rentVerdict" style="color:#fff; font-size:1.15rem; margin-bottom: 10px;"></p>
+                    </div>
+                    <div class="chart-container" style="margin-top:20px; position: relative; height:300px; width:100%;">
+                        <canvas id="rentChart"></canvas>
+                    </div>
+                    <div class="result-block info" style="margin-top: 20px;">
+                        <ul id="rentAdviceList"></ul>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 7: DEBT ERASER -->
+            <div id="tab-debt" class="tab-pane">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="debt_title"><span class="gradient-text">Debt</span> Eraser</h1>
+                    <p data-i18n="debt_desc">AI optimizes your loan EMIs to get you out of debt months or years earlier.</p>
+                </header>
+                <section class="glass-card form-section">
+                    <form id="debtForm">
+                        <div class="dual-col" style="margin-bottom: 30px;">
+                            <!-- Loan 1 -->
+                            <div style="background: rgba(255,255,255,0.02); padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                                <h3 style="margin-bottom: 15px; color:#ff4b2b;">Loan 1</h3>
+                                <div class="form-group"><label data-i18n="debt_lbl_l1_bal">Outstanding Balance (₹)</label><input type="number" id="d1_bal" required placeholder="100000"></div>
+                                <div class="form-group"><label data-i18n="debt_lbl_l1_roi">Interest Rate (%)</label><input type="number" step="0.1" id="d1_roi" required placeholder="36"></div>
+                                <div class="form-group"><label data-i18n="debt_lbl_l1_emi">Current EMI (₹)</label><input type="number" id="d1_emi" required placeholder="5000"></div>
+                            </div>
+                            
+                            <!-- Loan 2 -->
+                            <div style="background: rgba(255,255,255,0.02); padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                                <h3 style="margin-bottom: 15px; color:#f093fb;">Loan 2</h3>
+                                <div class="form-group"><label data-i18n="debt_lbl_l2_bal">Outstanding Balance (₹)</label><input type="number" id="d2_bal" placeholder="500000" value="0"></div>
+                                <div class="form-group"><label data-i18n="debt_lbl_l2_roi">Interest Rate (%)</label><input type="number" step="0.1" id="d2_roi" placeholder="14" value="0"></div>
+                                <div class="form-group"><label data-i18n="debt_lbl_l2_emi">Current EMI (₹)</label><input type="number" id="d2_emi" placeholder="15000" value="0"></div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="background: rgba(255,215,0,0.05); padding:20px; border-radius:12px; border: 1px dashed rgba(255,215,0,0.3);">
+                            <label style="color:#ffd700;" data-i18n="debt_lbl_extra">Extra Monthly Payment You Can Make (₹)</label>
+                            <input type="number" id="debt_extra" required placeholder="e.g. 5000" value="0">
+                        </div>
+                        <button type="submit" class="cta-button" style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);" data-i18n="debt_btn_run">Find the Fastest Payoff Path ⚡</button>
+                    </form>
+                </section>
+                
+                <section class="glass-card result-section hidden" id="debtResultCard" style="margin-top:20px;">
+                    <h4 data-i18n="debt_res_title" style="font-size: 1.5rem; margin-bottom: 25px; color:#4facfe;">💳 AI Debt Optimization Strategy</h4>
+                    
+                    <!-- Stats Dashboard Row -->
+                    <div class="row" style="margin-bottom: 30px;">
+                        <div class="regime-box" style="border-color: #ffb74d; background: rgba(255, 183, 77, 0.05);">
+                            <h4 style="color:var(--text-muted); font-size:1rem; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px;">⏳ Time Saved</h4>
+                            <h2 style="color:#ffb74d; font-size: 2.5rem; margin: 10px 0;" id="debtUiMonths">0M</h2>
+                            <p style="font-size:0.9rem; color: #fff;">Earlier completely debt-free!</p>
+                        </div>
+                        <div class="regime-box winner" style="border-color: #00e676; background: rgba(0, 230, 118, 0.05); box-shadow: 0 0 25px rgba(0,230,118,0.2);">
+                            <h4 style="color:var(--text-muted); font-size:1rem; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px;">💰 Interest Saved</h4>
+                            <h2 style="color:#00e676; font-size: 2.5rem; margin: 10px 0;" id="debtUiInt">₹0</h2>
+                            <p style="font-size:0.9rem; color: #fff;">Guaranteed Savings!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container" style="margin-bottom:20px; position: relative; height:250px; width:100%;">
+                        <canvas id="debtChart"></canvas>
+                    </div>
+
+                    <div class="result-block" style="background: rgba(255,255,255,0.03); padding: 25px; border-radius:12px; border-left: 4px solid #4facfe; margin-bottom:25px;">
+                        <p id="debtVerdictTime" style="color:#e2e8f0; font-size:1.15rem; margin-bottom: 12px; line-height: 1.6;"></p>
+                        <p id="debtVerdictInt" style="color:#e2e8f0; font-size:1.15rem; line-height: 1.6;"></p>
+                    </div>
+
+                    <div class="smart-tip" style="border-left-color: #ff4b2b; background: linear-gradient(135deg, rgba(255,75,43,0.1), transparent); margin-top:20px;">
+                        <h4 style="color:#ff4b2b; display:flex; align-items:center; gap:8px;">💡 AI Expert Advice</h4>
+                        <ul id="debtAdviceList" style="margin-top: 15px;"></ul>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 8: GOLD ANALYZER -->
+            <div id="tab-gold" class="tab-pane">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="gold_title"><span class="gradient-text">Gold</span> Analyzer</h1>
+                    <p data-i18n="gold_desc">Calculate the hidden losses of Physical Gold vs Sovereign Gold Bonds (SGB).</p>
+                </header>
+                <section class="glass-card form-section">
+                    <form id="goldForm">
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="gold_lbl_port">Total Net Worth / Portfolio (₹)</label><input type="number" id="gold_port" required placeholder="5000000"></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="gold_lbl_phys">Physical Gold Value (Jewelry/Coins) (₹)</label><input type="number" id="gold_phys" required placeholder="500000" value="0"></div>
+                            <div class="input-field"><label data-i18n="gold_lbl_sgb">SGB / Gold ETF Value (₹)</label><input type="number" id="gold_sgb" required placeholder="100000" value="0"></div>
+                        </div>
+                        <button type="submit" class="cta-button" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color:#000;" data-i18n="gold_btn_run">Analyze Gold Portfolio 🔎</button>
+                    </form>
+                </section>
+                
+                <section class="glass-card result-section hidden" id="goldResultCard" style="margin-top:20px;">
+                    <h4 data-i18n="gold_res_title" style="font-size: 1.5rem; margin-bottom: 25px; color:#f6d365;">🥇 AI Gold Strategy</h4>
+                    
+                    <div class="result-block" style="background: rgba(255,255,255,0.03); padding: 25px; border-radius:12px; border-left: 4px solid #f6d365; margin-bottom:25px;">
+                        <p id="goldVerdictAlloc" style="color:#e2e8f0; font-size:1.15rem; margin-bottom: 12px; line-height: 1.6;"></p>
+                        <p id="goldVerdictLoss" style="color:#ff5252; font-size:1.15rem; line-height: 1.6; font-weight:bold;"></p>
+                        <p id="goldVerdictSgb" style="color:#00e676; font-size:1.15rem; line-height: 1.6; font-weight:bold;"></p>
+                    </div>
+
+                    <div class="smart-tip" style="border-left-color: #fda085; background: linear-gradient(135deg, rgba(253,160,133,0.1), transparent); margin-top:20px;">
+                        <ul id="goldAdviceList" style="margin-top: 15px;"></ul>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 9: AI Budgetizer -->
+            <div id="tab_budget" class="tab-pane hidden">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="bud_title">AI Budgetizer</h1>
+                    <p data-i18n="bud_desc">Input your monthly income & expenses. We will map it to the ideal 50/30/20 budget framework.</p>
+                </header>
+                
+                <section class="glass-card form-section">
+                    <form id="budgetForm">
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="bud_inc">Net Monthly Income (₹)</label><input type="number" id="bud_inc" placeholder="50000" required></div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="bud_needs">Needs (Rent, Groceries, EMI)</label><input type="number" id="bud_needs" placeholder="20000" required></div>
+                            <div class="input-field"><label data-i18n="bud_wants">Wants (Dining, Gadgets, Fun)</label><input type="number" id="bud_wants" placeholder="10000" required></div>
+                        </div>
+                        <button type="submit" class="cta-button" data-i18n="bud_btn">Generate Budget Chart</button>
+                    </form>
+                </section>
+
+                <section class="result-section hidden" id="budgetResultCard" style="margin-top: 30px;">
+                    <div class="glass-card">
+                        <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: center; justify-content: center;">
+                            <div class="chart-container" style="position: relative; width: 220px; height: 220px; border-radius: 50%; box-shadow: 0 0 30px rgba(0,0,0,0.5);">
+                                <div id="budgetPie" style="width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#00e676 0%, #00e676 100%); transition: background 1.5s ease-out;"></div>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 140px; height: 140px; background: var(--bg-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit'; font-size: 1.5rem; font-weight: 700;">Vs 50/30/20</div>
+                            </div>
+                            <div style="flex: 1; min-width: 250px;">
+                                <h3 style="margin-bottom: 20px; color: #fff;">Your Allocation</h3>
+                                <div style="display: flex; flex-direction: column; gap: 15px; font-size: 1.1rem;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: #4facfe; font-weight:600;">Needs (Ideal ~50%)</span>
+                                        <span id="pctNeeds" style="font-weight: 700;">--%</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: #b388ff; font-weight:600;">Wants (Ideal ~30%)</span>
+                                        <span id="pctWants" style="font-weight: 700;">--%</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: #00e676; font-weight:600;">Savings (Ideal 20%+)</span>
+                                        <span id="pctSavings" style="font-weight: 700;">--%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="smart-tip" style="margin-top: 40px;">
+                            <p id="budgetAdvice" style="color: #fff; line-height: 1.6;"></p>
+                        </div>
+                    </div>
+                </section>
+                </section>
+            </div>
+
+            <!-- TAB 10: WEALTH LEAK -->
+            <div id="tab_leak" class="tab-pane hidden">
+                <header style="text-align:left; margin-bottom: 30px;">
+                    <h1 data-i18n="leak_title">Wealth Leak Finder</h1>
+                    <p data-i18n="leak_desc">Discover the shocking 10-year opportunity cost of your small monthly subscriptions and habits if invested at 12% in Index Funds.</p>
+                </header>
+                
+                <section class="glass-card form-section">
+                    <form id="leakForm">
+                        <div class="form-group row">
+                            <div class="input-field"><label data-i18n="leak_inp">Monthly Expense (Netflix, Coffee, Gym, etc) (₹)</label><input type="number" id="leak_amt" placeholder="500" required></div>
+                        </div>
+                        <button type="submit" class="cta-button" data-i18n="leak_btn">Calculate Lost Wealth</button>
+                    </form>
+                </section>
+
+                <section class="result-section hidden" id="leakResultCard" style="margin-top: 30px;">
+                    <div class="glass-card" style="text-align: center;">
+                        <h3 style="color: #a0aabf; font-size: 1.1rem; margin-bottom: 10px;" data-i18n="leak_res_title">In 10 Years, this exactly costs you:</h3>
+                        <div style="font-size: 3.5rem; font-family: 'Outfit'; font-weight: 700; color: #ff5252; text-shadow: 0 0 20px rgba(255, 82, 82, 0.5); margin: 20px 0;" id="leakCostValue">₹0</div>
+                        <div class="smart-tip">
+                            <p style="color: #fff; line-height: 1.6; font-size: 1.05rem;" id="leakAdvice"></p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Chatbot Assistant -->
+    <div class="chatbot-wrapper" id="chatbotWrapper">
+        <button class="chatbot-toggle" id="chatbotToggle">
+            <span class="chat-icon">💬</span>
+        </button>
+        <div class="chatbot-window hidden" id="chatbotWindow">
+            <div class="chatbot-header">
+                <div>
+                    <h3 data-i18n="chat_title">FinAI Assistant</h3>
+                    <p style="font-size: 0.8rem; color: #a0aabf; margin-top:2px;" data-i18n="chat_status">Online | Ready to help</p>
+                </div>
+                <button class="chatbot-close" id="chatbotClose">✖</button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-message bot">
+                    <div class="msg-content" data-i18n="chat_welcome">Hello! I am FinAI. Ask me anything about your finances, loans, or investments!</div>
+                </div>
+            </div>
+            <div class="chatbot-input-area">
+                <div class="chat-quick-replies" id="chatQuickReplies">
+                    <button class="quick-reply-btn" data-type="1" data-i18n="chat_qr_1">Got a raise!</button>
+                    <button class="quick-reply-btn" data-type="2" data-i18n="chat_qr_2">Should I buy a car?</button>
+                    <button class="quick-reply-btn" data-type="3" data-i18n="chat_qr_3">Save tax?</button>
+                </div>
+                <form id="chatForm" class="chat-form">
+                    <input type="text" id="chatInput" placeholder="Type..." data-i18n="chat_placeholder" required autocomplete="off">
+                    <button type="submit" class="chat-send">▶</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- html2pdf dependency -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="lang.js"></script>
+    <script src="script.js"></script>
+    <script src="js/persistence.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>
