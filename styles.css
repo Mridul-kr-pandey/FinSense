@@ -210,6 +210,25 @@ option { background: var(--bg-main); color: #fff; }
 .chat-voice:hover { background: rgba(79, 172, 254, 0.1); border-color: rgba(79,172,254,0.3); }
 .chat-voice.listening { background: rgba(255, 82, 82, 0.2); border-color: #ff5252; box-shadow: 0 0 15px rgba(255, 82, 82, 0.4); animation: pulseMic 1.5s infinite alternate; }
 @keyframes pulseMic { 0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 82, 82, 0.4); } 100% { transform: scale(1.1); box-shadow: 0 0 25px rgba(255, 82, 82, 0.7); } }
+
+/* Laser Scanner Animation */
+#laserLine {
+    animation: scanMove 3s infinite linear;
+}
+@keyframes scanMove {
+    0% { top: -5px; }
+    50% { top: 100%; }
+    100% { top: -5px; }
+}
+#ocrGhostText span {
+    display: block;
+    animation: textFlicker 2s infinite ease-in-out;
+}
+@keyframes textFlicker {
+    0%, 100% { opacity: 0.05; }
+    50% { opacity: 0.2; transform: scale(1.01); }
+}
+
 .typing-indicator { display: inline-flex; gap: 5px; padding: 6px 10px; }
 .typing-indicator span { width: 6px; height: 6px; background: #a0aabf; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
 .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }

@@ -204,22 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const form16Input = document.getElementById('form16');
     const form16UploadBtn = document.getElementById('form16UploadBtn');
 
-    window.simulateOCR = function() {
-        if(form16Input && form16Input.files.length > 0) {
-            const textWrap = document.getElementById('form16TextWrap');
-            const t = i18n[currentLang];
-            if(textWrap) textWrap.innerHTML = `<p style="color:#00e676; font-size:1.3rem; margin-bottom:5px;">${t.tax_sim_ext || "Extracting data..."}</p>`;
-            setTimeout(() => {
-                document.getElementById('tax_gross').value = 1600000;
-                document.getElementById('tax_hra').value = 95000;
-                document.getElementById('tax_80c').value = 150000;
-                document.getElementById('tax_80d').value = 25000;
-                if(textWrap) textWrap.innerHTML = `<p style="color:#00e676; font-size:1.3rem; margin-bottom:5px;">${t.tax_sim_succ || "Data Extracted Successfully"}</p>`;
-            }, 1500);
-        }
-    };
-    if (form16Input) form16Input.addEventListener('change', window.simulateOCR);
-
     const taxForm = document.getElementById('taxForm');
 
     taxForm.addEventListener('submit', (e) => {
