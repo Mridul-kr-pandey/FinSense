@@ -170,6 +170,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const clone = resultCard.cloneNode(true);
             clone.id = "pdfCaptureClone";
             clone.classList.add('pdf-capture-clone');
+
+            // 1.5 Manually sync all canvases (cloneNode doesn't copy canvas content)
+            const originalCanvases = resultCard.querySelectorAll('canvas');
+            const clonedCanvases = clone.querySelectorAll('canvas');
+            originalCanvases.forEach((orig, idx) => {
+                if(clonedCanvases[idx]) {
+                    const ctx = clonedCanvases[idx].getContext('2d');
+                    ctx.drawImage(orig, 0, 0);
+                }
+            });
             
             // 2. Wrap and Append hiddenly
             const container = document.createElement('div');
@@ -195,9 +205,20 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             // 4. Run capture and clean up
-            html2pdf().set(opt).from(clone).save().then(() => {
-                document.body.removeChild(container);
-            });
+            html2pdf()
+                .set(opt)
+                .from(clone)
+                .toPdf()
+                .save()
+                .then(() => {
+                    console.log("PDF Generation Complete.");
+                    document.body.removeChild(container);
+                })
+                .catch(err => {
+                    console.error("PDF Error:", err);
+                    document.body.removeChild(container);
+                    alert("Error generating PDF. Please try again.");
+                });
         });
     }
 
