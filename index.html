@@ -63,6 +63,14 @@
                     <h1 data-i18n="app_title"><span class="gradient-text">Money Health</span> Mentor</h1>
                     <p data-i18n="app_desc">Get your AI-powered financial score and personalized action plan.</p>
                 </header>
+
+                <div class="aggregator-sync-container" style="margin-bottom: 30px;">
+                    <button type="button" id="btnBankSync" class="cta-button" style="background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%); margin-top: 0; box-shadow: 0 10px 25px rgba(11, 163, 96, 0.4); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <span style="font-size: 1.4rem;">🏦</span> Secure Bank Sync (Account Aggregator)
+                    </button>
+                    <p style="text-align:center; font-size: 0.85rem; color: var(--text-muted); margin-top: 10px; font-weight: 500;">One-click secure OTP data fetch via RBI Account Aggregator framework.</p>
+                </div>
+
                 <section class="glass-card form-section">
                     <h2 data-i18n="form_title" style="margin-bottom: 30px; font-size:1.8rem; font-weight:600;">📊 Financial Details</h2>
                     <form id="healthForm">
@@ -573,10 +581,24 @@
                     <button class="quick-reply-btn" data-type="3" data-i18n="chat_qr_3">Save tax?</button>
                 </div>
                 <form id="chatForm" class="chat-form">
+                    <button type="button" id="chatVoiceBtn" class="chat-voice" title="Speak to FinAI">🎙️</button>
                     <input type="text" id="chatInput" placeholder="Type..." data-i18n="chat_placeholder" required autocomplete="off">
                     <button type="submit" class="chat-send">▶</button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Terminal Overlay for Bank Sync Mock -->
+    <div id="terminalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index: 2000; align-items:center; justify-content:center; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);">
+        <div class="terminal-window" style="width: 90%; max-width: 650px; background: #07090f; border: 1px solid rgba(79, 172, 254, 0.3); border-radius: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); overflow: hidden; font-family: 'Courier New', Courier, monospace;">
+            <div style="background: rgba(255,255,255,0.05); padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.1); display:flex; gap: 8px;">
+                <div style="width:12px; height:12px; border-radius:50%; background:#ff5252;"></div>
+                <div style="width:12px; height:12px; border-radius:50%; background:#ffb74d;"></div>
+                <div style="width:12px; height:12px; border-radius:50%; background:#00e676;"></div>
+                <span style="margin-left: 15px; color:#a0aabf; font-size:0.8rem; font-family: 'Plus Jakarta Sans', sans-serif;">Account Aggregator Tunnel</span>
+            </div>
+            <div id="terminalContent" style="padding: 24px; color: #00e676; min-height: 280px; text-shadow: 0 0 5px rgba(0, 230, 118, 0.5); line-height: 1.7; font-size: 1rem; white-space: pre-wrap;"></div>
         </div>
     </div>
 
@@ -587,5 +609,6 @@
     <script src="js/persistence.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/chatbot.js"></script>
+    <script src="js/aggregator.js"></script>
 </body>
 </html>

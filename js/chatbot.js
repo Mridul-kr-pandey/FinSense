@@ -20,6 +20,7 @@ function initTrueAIChatbot() {
 
     const chatForm = document.getElementById('chatForm');
     const chatInput = document.getElementById('chatInput');
+    const chatVoiceBtn = document.getElementById('chatVoiceBtn');
     const chatbotMessages = document.getElementById('chatbotMessages');
     const quickReplyBtns = document.querySelectorAll('.quick-reply-btn');
     
@@ -46,7 +47,17 @@ function initTrueAIChatbot() {
         return msgDiv;
     }
 
-    async function fetchGeminiReply(userText, typingIndicator) {
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            // strip markdown
+            const plainText = text.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/#/g, '');
+            const utterance = new SpeechSynthesisUtterance(plainText);
+            utterance.lang = 'en-IN';
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    async function fetchGeminiReply(userText, typingIndicator, isVoice = false) {
         if (GEMINI_API_KEY === "PUT_YOUR_GEMINI_API_KEY_HERE" || !GEMINI_API_KEY) {
             typingIndicator.remove();
             addMessage("[Demo Mode Setup] To enable the true AI, please edit `js/chatbot.js` and replace `PUT_YOUR_GEMINI_API_KEY_HERE` with your actual Google Gemini API key.", 'bot');
@@ -77,6 +88,7 @@ function initTrueAIChatbot() {
             if (data.candidates && data.candidates.length > 0) {
                 const replyText = data.candidates[0].content.parts[0].text;
                 addMessage(replyText, 'bot');
+                if (isVoice) speakText(replyText);
             } else if (data.error) {
                 addMessage("API Error: " + data.error.message, 'bot');
             } else {
@@ -90,12 +102,57 @@ function initTrueAIChatbot() {
         }
     }
 
-    function handleUserInput(text) {
+    function handleUserInput(text, isVoice = false) {
         if(!text) return;
         addMessage(text, 'user');
-        
+        chatInput.value = '';
         const typingIndicator = showTyping();
-        fetchGeminiReply(text, typingIndicator);
+        fetchGeminiReply(text, typingIndicator, isVoice);
+    }
+
+    // Voice Recognition Setup
+    let recognition = null;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-IN';
+        
+        recognition.onstart = function() {
+            if(chatVoiceBtn) chatVoiceBtn.classList.add('listening');
+            chatInput.placeholder = "Listening...";
+        };
+        
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            handleUserInput(transcript, true);
+        };
+        
+        recognition.onerror = function(event) {
+            console.error("Speech Recognition Error", event.error);
+            if(chatVoiceBtn) chatVoiceBtn.classList.remove('listening');
+            chatInput.placeholder = "Type...";
+        };
+        
+        recognition.onend = function() {
+            if(chatVoiceBtn) chatVoiceBtn.classList.remove('listening');
+            chatInput.placeholder = "Type...";
+        };
+    }
+
+    if (chatVoiceBtn) {
+        chatVoiceBtn.addEventListener('click', () => {
+            if (recognition) {
+                if (chatVoiceBtn.classList.contains('listening')) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            } else {
+                alert("Voice recognition is not supported in this browser.");
+            }
+        });
     }
 
     // Bind event tracking
@@ -103,8 +160,7 @@ function initTrueAIChatbot() {
         chatForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const text = chatInput.value.trim();
-            chatInput.value = '';
-            handleUserInput(text);
+            handleUserInput(text, false);
         });
     }
 
