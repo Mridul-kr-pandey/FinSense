@@ -208,15 +208,23 @@ document.addEventListener('DOMContentLoaded', () => {
             html2pdf()
                 .set(opt)
                 .from(clone)
-                .toPdf()
-                .save()
-                .then(() => {
+                .output('blob')
+                .then((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `FinSense_Report_${new Date().toISOString().slice(0,10)}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
                     console.log("PDF Generation Complete.");
                     document.body.removeChild(container);
                 })
                 .catch(err => {
                     console.error("PDF Error:", err);
-                    document.body.removeChild(container);
+                    if(container.parentNode) document.body.removeChild(container);
                     alert("Error generating PDF. Please try again.");
                 });
         });
