@@ -36,6 +36,12 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Skip cache for API routes (Vercel Serverless)
+  if (event.request.url.includes('/api/')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   // Network-first architecture for dev updates:
   event.respondWith(
     fetch(event.request).catch(() => {
