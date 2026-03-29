@@ -25,7 +25,7 @@ function initTrueAIChatbot() {
     
     // API KEY PLACEHOLDER FOR THE USER TO FILL IN!
     // TODO: User must put their Google Gemini API Key here for the bot to work!
-    const GEMINI_API_KEY = "AIzaSyCIeGMkbRaqZ-BAFyBhy1NE117svLsXqUA";
+    const GEMINI_API_KEY = "PUT_YOUR_GEMINI_API_KEY_HERE";
 
     function addMessage(text, sender) {
         const msgDiv = document.createElement('div');
