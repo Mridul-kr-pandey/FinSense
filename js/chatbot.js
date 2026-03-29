@@ -68,11 +68,9 @@ function initTrueAIChatbot() {
             const data = await response.json();
             typingIndicator.remove();
             
-            // Check for candidates in the proxy response (which reflects the Google API structure)
-            if (data.candidates && data.candidates.length > 0) {
-                const replyText = data.candidates[0].content.parts[0].text;
-                addMessage(replyText, 'bot');
-                if (isVoice) speakText(replyText);
+            if (data.reply) {
+                addMessage(data.reply, 'bot');
+                if (isVoice) speakText(data.reply);
             } else if (data.error) {
                 addMessage("AI Error: " + (data.error.message || data.error), 'bot');
             } else {
