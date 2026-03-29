@@ -6,84 +6,83 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btnBankSync || !terminalOverlay || !terminalContent) return;
 
     const logs = [
-        { text: "> Initializing Secure Handshake with RBI AA Framework...", delay: 500 },
-        { text: "> Encrypting Tunnel (AES-256)... DONE", delay: 800 },
-        { text: "> Connecting to HDFC Bank API Node...", delay: 600 },
-        { text: "> Requesting consent for 'FinSense AI'...", delay: 700 },
-        { text: "> Consent Approved (Token: AA_982x_JSL)...", delay: 500 },
-        { text: "> Fetching Savings Account Data (last 6 months)...", delay: 900 },
-        { text: "> Found 422 transactions. Analyzing patterns...", delay: 1000 },
-        { text: "> Scanning Credit Card Statements (ICICI, AMEX)...", delay: 800 },
-        { text: "> Fetching Investment Portfolio (CAMS/KFintech)...", delay: 1100 },
-        { text: "> Calculating average monthly breakdown...", delay: 700 },
-        { text: "> Sync Complete! Populating Dashboard...", delay: 500 }
+        "> Initializing RBI Account Aggregator Tunnel...",
+        "> Requesting permission from User via AA-Handle: user@onemoney",
+        "> [OK] Consent Received. Fetching FIP list...",
+        "> Connecting to HDFC Bank Limited...",
+        "> Connecting to ICICI Bank...",
+        "> Fetching Savings Account Statements (last 6 months)...",
+        "> Parsing 412 transactions for patterns...",
+        "> [Pattern] Salary detected: ₹1,25,000",
+        "> [Pattern] Rent detected: ₹28,000",
+        "> [Pattern] SIP detected: ₹25,000 (Index Funds)",
+        "> [Pattern] Credit Card Debt detected: ₹42,000 (HDFC Regalia)",
+        "> Calculating Money Health metrics...",
+        "> Data aggregation complete. Syncing with FinSense...",
+        "DONE: ALL SYSTEMS GREEN."
     ];
 
-    async function runTerminal() {
+    async function typeLog(text) {
+        return new Promise(resolve => {
+            const line = document.createElement('div');
+            terminalContent.appendChild(line);
+            let i = 0;
+            const interval = setInterval(() => {
+                line.textContent += text[i];
+                i++;
+                if (i >= text.length) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 20);
+        });
+    }
+
+    btnBankSync.addEventListener('click', async () => {
+        btnBankSync.disabled = true;
+        btnBankSync.textContent = "Syncing...";
         terminalOverlay.style.display = 'flex';
         terminalContent.innerHTML = '';
-        
+
         for (const log of logs) {
-            const line = document.createElement('div');
-            line.style.marginBottom = '8px';
-            terminalContent.appendChild(line);
-            
-            // Typewriter effect for each line
-            for (let i = 0; i < log.text.length; i++) {
-                line.textContent += log.text[i];
-                await new Promise(r => setTimeout(r, 20));
-            }
-            
-            await new Promise(r => setTimeout(r, log.delay));
+            await typeLog(log);
+            await new Promise(r => setTimeout(r, 400));
         }
+
+        // Mock Data Auto-fill
+        document.getElementById('income').value = 125000;
+        document.getElementById('expenses').value = 45000;
+        document.getElementById('age').value = 28;
+        document.getElementById('emergency_months').value = 4;
+        document.getElementById('health_insurance').value = "Yes";
+        document.getElementById('life_insurance').value = "Yes";
+        document.getElementById('investments').value = "Mutual Funds";
+        document.getElementById('tax_saving').value = "Yes";
+        document.getElementById('debt').value = "Yes";
+        document.getElementById('emi_percentage').value = 15;
+
+        // Auto-fill Tax Wizard too for better demo
+        if(document.getElementById('tax_gross')) document.getElementById('tax_gross').value = 1500000;
+
+        // Trigger persistence (saves to localStorage)
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
 
         setTimeout(() => {
-            closeTerminalAndFill();
-        }, 1000);
-    }
-
-    function closeTerminalAndFill() {
-        terminalOverlay.style.display = 'none';
-        
-        // Mock Data to Fill
-        const mockData = {
-            'age': 29,
-            'income': 125000,
-            'expenses': 48500,
-            'emergency_months': 5,
-            'emi_percentage': 15,
-            'tax_gross': 1500000,
-            'tax_hra': 120000,
-            'tax_80c': 150000,
-            'tax_80d': 25000,
-            'leak_amt': 2500
-        };
-
-        // Fill inputs
-        for (const [id, value] of Object.entries(mockData)) {
-            const el = document.getElementById(id);
-            if (el) {
-                el.value = value;
-                // Dispatch input event for persistence.js to pick up
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                // Visual feedback
-                el.style.borderColor = '#00e676';
-                el.style.boxShadow = '0 0 10px rgba(0, 230, 118, 0.3)';
-                setTimeout(() => {
-                    el.style.borderColor = '';
-                    el.style.boxShadow = '';
-                }, 2000);
+            terminalOverlay.style.display = 'none';
+            btnBankSync.innerHTML = '<span style="font-size: 1.4rem;">✅</span> Sync Complete';
+            
+            // Trigger the calculation automatically
+            const healthForm = document.getElementById('healthForm');
+            if (healthForm) {
+                healthForm.dispatchEvent(new Event('submit'));
             }
-        }
 
-        // Trigger major calculations if they exist in global scope
-        const healthForm = document.getElementById('healthForm');
-        if (healthForm) {
-            healthForm.dispatchEvent(new Event('submit', { cancelable: true }));
-        }
-
-        alert("Success! 🏦 Data synchronized from your bank accounts using Account Aggregator.");
-    }
-
-    btnBankSync.addEventListener('click', runTerminal);
+            // Optional: Alert the user
+            // alert("Data successfully fetched from 2 banks!");
+        }, 1000);
+    });
 });
