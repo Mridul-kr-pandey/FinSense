@@ -253,6 +253,33 @@ option { background: var(--bg-main); color: #fff; }
     50% { opacity: 0.2; transform: scale(1.01); }
 }
 
+/* PDF Capture Helper */
+.pdf-capture-clone {
+    background: #0c0f1a !important; /* Force solid dark bg */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    padding: 30px !important;
+    width: 800px !important; /* Fixed width for better capture */
+    color: #fff !important;
+}
+.pdf-capture-clone * {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+}
+.pdf-capture-clone .cta-button, .pdf-capture-clone .btn-secondary {
+    display: none !important;
+}
+body.light-mode .pdf-capture-clone {
+    background: #ffffff !important;
+    color: #1a202c !important;
+    border: 1px solid #e1e4e8 !important;
+}
+
 .typing-indicator { display: inline-flex; gap: 5px; padding: 6px 10px; }
 .typing-indicator span { width: 6px; height: 6px; background: #a0aabf; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
 .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }

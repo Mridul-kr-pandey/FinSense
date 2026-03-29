@@ -164,35 +164,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if(downloadPdfBtn) {
         downloadPdfBtn.addEventListener('click', () => {
             const isLight = document.body.classList.contains('light-mode');
-            const bgHex = isLight ? '#f4f6f9' : '#0c0f1a';
+            const bgHex = isLight ? '#ffffff' : '#0c0f1a';
+            
+            // 1. Create a deep clone
+            const clone = resultCard.cloneNode(true);
+            clone.id = "pdfCaptureClone";
+            clone.classList.add('pdf-capture-clone');
+            
+            // 2. Wrap and Append hiddenly
+            const container = document.createElement('div');
+            container.style.position = 'fixed';
+            container.style.left = '-9999px';
+            container.style.top = '0';
+            container.appendChild(clone);
+            document.body.appendChild(container);
+
+            // 3. Configure html2pdf
             const opt = {
                 margin:       10,
-                filename:     'FinSense_ActionPlan.pdf',
+                filename:     `FinSense_Report_${new Date().toISOString().slice(0,10)}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: bgHex },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    backgroundColor: bgHex,
+                    letterRendering: true,
+                    logging: true 
+                },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'p' }
             };
-            
-            // Hide buttons while capturing
-            resetBtn.style.display = 'none';
-            downloadPdfBtn.style.display = 'none';
-            
-            // Fix html2canvas backdrop-filter bug by applying solid background temporarily
-            const originalBackdrop = resultCard.style.backdropFilter;
-            const originalWebkitBackdrop = resultCard.style.webkitBackdropFilter;
-            const originalBg = resultCard.style.background;
-            
-            resultCard.style.backdropFilter = 'none';
-            resultCard.style.webkitBackdropFilter = 'none';
-            resultCard.style.background = isLight ? '#ffffff' : '#141928';
-            
-            html2pdf().set(opt).from(resultCard).save().then(() => {
-                resetBtn.style.display = 'block';
-                downloadPdfBtn.style.display = 'flex';
-                // Restore styles
-                resultCard.style.backdropFilter = originalBackdrop;
-                resultCard.style.webkitBackdropFilter = originalWebkitBackdrop;
-                resultCard.style.background = originalBg;
+
+            // 4. Run capture and clean up
+            html2pdf().set(opt).from(clone).save().then(() => {
+                document.body.removeChild(container);
             });
         });
     }
